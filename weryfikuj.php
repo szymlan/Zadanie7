@@ -33,10 +33,6 @@
 			{
     $result = mysqli_query ($polaczenie, "SELECT * FROM logi");
     $ip = $_SERVER["REMOTE_ADDR"];
-        function ip_details($ip) {      // skrypt oparty o format JSON umożliwiajacy przyblizona geolokalizacje gosci portalu
-            $json = file_get_contents ("https://ipinfo.io/{$ip}/geo");
-            $details = json_decode ($json);
-            return $details;} 
 
 				$_SESSION['zalogowany'] = true;
 				
@@ -64,19 +60,17 @@
 				    $result = mysqli_query($polaczenie, "SELECT COUNT(*) FROM `logi` WHERE `ip` LIKE '$ip' AND `Data` > (now() - interval 2 minute)");
 				    $count = mysqli_fetch_array($result, MYSQLI_NUM);
 
-				    if($count[0] > 3){
-				     	$_SESSION['bladlogowan'] = '<span style="color:red"> Możesz zalogować sie tylko 3 razy w ciagu 2 minut!</span>';
-				     	header('Location: index.php');
-					}
-
-				$_SESSION['blad'] = '<span style="color:red">Nieprawidłowy login lub hasło!</span>';
-				header('Location: index.php');
-				
+				   $_SESSION['blad'] = '<span style="color:red">Nieprawidłowy login lub hasło!</span>';
+                    header('Location: index.php');
+                    
+                    if($count[0] >= 3){
+                     $_SESSION['bladlogowan'] = '<span style="color:red; font-size:20;"> Możesz zalogować sie tylko 3 razy w ciagu minuty!</span>';
+                      header('Location: ban.php');
+                      unset($_SESSION['blad']);
 			}
-			
+                    
 		}
-		
 		$polaczenie->close();
-	}
+	}}
 	
 ?>
